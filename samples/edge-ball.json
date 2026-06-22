@@ -1,0 +1,29 @@
+{
+  "id": "edge-ball",
+  "name": "压线球 - 落在边线算界内",
+  "servingTeam": "B",
+  "courtLength": 18,
+  "courtWidth": 9,
+  "netHeight": 2.24,
+  "events": [
+    {
+      "id": "e1",
+      "type": "serve",
+      "t": 0.0,
+      "team": "B",
+      "player": 7,
+      "trajectory": [
+        { "t": 0.0, "x": 17.5, "y": 0.0, "z": 3.0 },
+        { "t": 0.5, "x": 13.0, "y": 4.4, "z": 2.7 },
+        { "t": 0.9, "x": 9.0, "y": 4.48, "z": 2.6 },
+        { "t": 1.4, "x": 4.0, "y": 4.5, "z": 0.0 }
+      ]
+    },
+    {
+      "id": "e2",
+      "type": "landing",
+      "t": 1.4,
+      "note": "球正好落在A队边线上（y=4.5，正好压线）"
+    }
+  ]
+}

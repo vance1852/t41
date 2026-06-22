@@ -1,0 +1,196 @@
+{
+  "matchId": "match-01",
+  "matchName": "友谊赛 - 第1局",
+  "rallies": [
+    {
+      "id": "r01",
+      "name": "第1分 - A队发球得分",
+      "servingTeam": "A",
+      "courtLength": 18,
+      "courtWidth": 9,
+      "netHeight": 2.24,
+      "events": [
+        {
+          "id": "r01-e1",
+          "type": "serve",
+          "t": 0.0,
+          "team": "A",
+          "player": 1,
+          "trajectory": [
+            { "t": 0.0, "x": 0.5, "y": 0.0, "z": 3.0 },
+            { "t": 0.5, "x": 9.0, "y": 0.0, "z": 2.6 },
+            { "t": 1.0, "x": 15.0, "y": 0.0, "z": 0.0 }
+          ]
+        },
+        {
+          "id": "r01-e2",
+          "type": "landing",
+          "t": 1.0,
+          "note": "发球直接落在B队界内"
+        }
+      ]
+    },
+    {
+      "id": "r02",
+      "name": "第2分 - B队连续触球犯规",
+      "servingTeam": "B",
+      "courtLength": 18,
+      "courtWidth": 9,
+      "netHeight": 2.24,
+      "events": [
+        {
+          "id": "r02-e1",
+          "type": "serve",
+          "t": 0.0,
+          "team": "B",
+          "player": 7,
+          "trajectory": [
+            { "t": 0.0, "x": 17.5, "y": 0.0, "z": 3.0 },
+            { "t": 0.6, "x": 9.0, "y": 0.0, "z": 2.6 },
+            { "t": 1.1, "x": 4.0, "y": 0.0, "z": 2.0 }
+          ]
+        },
+        {
+          "id": "r02-e2",
+          "type": "receive",
+          "t": 1.1,
+          "team": "A",
+          "player": 6,
+          "trajectory": [
+            { "t": 1.1, "x": 4.0, "y": 0.0, "z": 2.0 },
+            { "t": 1.25, "x": 4.2, "y": 0.0, "z": 2.5 }
+          ]
+        },
+        {
+          "id": "r02-e3",
+          "type": "set",
+          "t": 1.25,
+          "team": "A",
+          "player": 6,
+          "note": "同一球员6号连续触球犯规"
+        }
+      ]
+    },
+    {
+      "id": "r03",
+      "name": "第3分 - 压线球判罚",
+      "servingTeam": "A",
+      "courtLength": 18,
+      "courtWidth": 9,
+      "netHeight": 2.24,
+      "events": [
+        {
+          "id": "r03-e1",
+          "type": "serve",
+          "t": 0.0,
+          "team": "A",
+          "player": 1,
+          "trajectory": [
+            { "t": 0.0, "x": 0.5, "y": 4.4, "z": 3.0 },
+            { "t": 0.6, "x": 9.0, "y": 4.49, "z": 2.6 },
+            { "t": 1.1, "x": 14.0, "y": 4.5, "z": 0.0 }
+          ]
+        },
+        {
+          "id": "r03-e2",
+          "type": "landing",
+          "t": 1.1,
+          "note": "球落在B队边线上，算界内"
+        }
+      ]
+    },
+    {
+      "id": "r04",
+      "name": "第4分 - 四次击球犯规",
+      "servingTeam": "B",
+      "courtLength": 18,
+      "courtWidth": 9,
+      "netHeight": 2.24,
+      "events": [
+        {
+          "id": "r04-e1",
+          "type": "serve",
+          "t": 0.0,
+          "team": "B",
+          "player": 7,
+          "trajectory": [
+            { "t": 0.0, "x": 17.5, "y": 0.0, "z": 3.0 },
+            { "t": 0.6, "x": 9.0, "y": 0.0, "z": 2.6 },
+            { "t": 1.1, "x": 4.0, "y": 0.0, "z": 2.0 }
+          ]
+        },
+        {
+          "id": "r04-e2",
+          "type": "receive",
+          "t": 1.1,
+          "team": "A",
+          "player": 6,
+          "trajectory": [
+            { "t": 1.1, "x": 4.0, "y": 0.0, "z": 2.0 },
+            { "t": 1.3, "x": 5.0, "y": 0.0, "z": 3.0 }
+          ]
+        },
+        {
+          "id": "r04-e3",
+          "type": "set",
+          "t": 1.3,
+          "team": "A",
+          "player": 2,
+          "trajectory": [
+            { "t": 1.3, "x": 5.0, "y": 0.0, "z": 3.0 },
+            { "t": 1.5, "x": 6.0, "y": 0.0, "z": 3.2 }
+          ]
+        },
+        {
+          "id": "r04-e4",
+          "type": "receive",
+          "t": 1.5,
+          "team": "A",
+          "player": 4,
+          "trajectory": [
+            { "t": 1.5, "x": 6.0, "y": 0.0, "z": 3.2 },
+            { "t": 1.7, "x": 7.0, "y": 0.0, "z": 3.0 }
+          ]
+        },
+        {
+          "id": "r04-e5",
+          "type": "spike",
+          "t": 1.7,
+          "team": "A",
+          "player": 3,
+          "note": "A队第4次触球，四次击球犯规"
+        }
+      ]
+    },
+    {
+      "id": "r05",
+      "name": "第5分 - A队发球出界",
+      "servingTeam": "A",
+      "courtLength": 18,
+      "courtWidth": 9,
+      "netHeight": 2.24,
+      "events": [
+        {
+          "id": "r05-e1",
+          "type": "serve",
+          "t": 0.0,
+          "team": "A",
+          "player": 1,
+          "note": "发球出界，y=5.5在边线外",
+          "trajectory": [
+            { "t": 0.0, "x": 0.5, "y": 3.0, "z": 3.0 },
+            { "t": 0.5, "x": 9.0, "y": 4.8, "z": 2.6 },
+            { "t": 0.8, "x": 13.0, "y": 5.5, "z": 0.5 },
+            { "t": 0.9, "x": 14.0, "y": 5.5, "z": 0.0 }
+          ]
+        },
+        {
+          "id": "r05-e2",
+          "type": "landing",
+          "t": 0.9,
+          "note": "球落在B队场地外(y=5.5 > 4.5)，B队得分"
+        }
+      ]
+    }
+  ]
+}
