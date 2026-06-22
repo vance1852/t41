@@ -78,8 +78,8 @@ describe("engine - 规则引擎", () => {
     });
   });
 
-  describe("发球得分", () => {
-    it("发球直接落B队界内，A队得分", () => {
+  describe("得分方规则", () => {
+    it("球落在某队场区界内，对方得分：A发球落B方，A得分", () => {
       const rally = makeRally("serve-ace", "A", [
         {
           id: "e1",
@@ -96,36 +96,13 @@ describe("engine - 规则引擎", () => {
         { id: "e2", type: "landing", t: 1.0 },
       ]);
       const r = processRally(rally);
-      expect(r.winner).toBe("B");
+      expect(r.winner).toBe("A");
       expect(r.reason).toContain("界内");
       expect(r.state.touchesByTeam.A).toBe(1);
     });
 
-    it("发球出界B队得分", () => {
-      const rally = makeRally("serve-out", "A", [
-        {
-          id: "e1",
-          type: "serve",
-          t: 0,
-          team: "A",
-          player: 1,
-          trajectory: [
-            { t: 0, x: 0.5, y: 3, z: 3 },
-            { t: 0.6, x: 9, y: 5, z: 2.6 },
-            { t: 1.0, x: 15, y: 6, z: 0 },
-          ],
-        },
-        { id: "e2", type: "landing", t: 1.0 },
-      ]);
-      const r = processRally(rally);
-      expect(r.winner).toBe("A");
-      expect(r.reason).toContain("出界");
-    });
-  });
-
-  describe("触球次数限制", () => {
-    it("B队接→二→扣三次正常，球落A队界内B队得分", () => {
-      const rally = makeRally("3touches-ok", "A", [
+    it("球落在某队场区界内，对方得分：B扣球落A方，B得分", () => {
+      const rally = makeRally("spike-land-a", "A", [
         {
           id: "e1",
           type: "serve",
@@ -176,13 +153,34 @@ describe("engine - 规则引擎", () => {
       ]);
       const r = processRally(rally);
       expect(r.state.touchesByTeam.B).toBe(3);
-      expect(r.violations.filter((v) => v.type === "four_touches").length).toBe(
-        0,
-      );
-      expect(r.winner).toBe("A");
+      expect(r.winner).toBe("B");
+      expect(r.reason).toContain("界内");
     });
 
-    it("A队第4次触球判四次击球犯规", () => {
+    it("最后触球队把球打出界，对方得分：A发球出界，B得分", () => {
+      const rally = makeRally("serve-out", "A", [
+        {
+          id: "e1",
+          type: "serve",
+          t: 0,
+          team: "A",
+          player: 1,
+          trajectory: [
+            { t: 0, x: 0.5, y: 3, z: 3 },
+            { t: 0.6, x: 9, y: 5, z: 2.6 },
+            { t: 1.0, x: 15, y: 6, z: 0 },
+          ],
+        },
+        { id: "e2", type: "landing", t: 1.0 },
+      ]);
+      const r = processRally(rally);
+      expect(r.winner).toBe("B");
+      expect(r.reason).toContain("出界");
+    });
+  });
+
+  describe("触球次数限制", () => {
+    it("A队第4次触球判四次击球犯规，对方(B)得分", () => {
       const rally = makeRally("4touches", "B", [
         {
           id: "e1",
@@ -330,11 +328,12 @@ describe("engine - 规则引擎", () => {
       expect(r.state.touchesByTeam.B).toBe(2);
       const fourTouches = r.violations.filter((v) => v.type === "four_touches");
       expect(fourTouches.length).toBe(0);
+      expect(r.winner).toBe("B");
     });
   });
 
   describe("连续触球", () => {
-    it("同一球员连续触球犯规", () => {
+    it("同一球员连续触球犯规，对方得分", () => {
       const rally = makeRally("consecutive", "B", [
         {
           id: "e1",
@@ -370,7 +369,7 @@ describe("engine - 规则引擎", () => {
   });
 
   describe("压线球", () => {
-    it("球正好落在y=4.5边线上算界内", () => {
+    it("球落在y=4.5边线上算界内，对方得分", () => {
       const rally = makeRally("line-ball", "A", [
         {
           id: "e1",
@@ -391,6 +390,7 @@ describe("engine - 规则引擎", () => {
       expect(landing).toBeDefined();
       expect(landing!.onLine).toBe(true);
       expect(landing!.inBounds).toBe(true);
+      expect(r.winner).toBe("A");
     });
   });
 
@@ -422,7 +422,7 @@ describe("engine - 规则引擎", () => {
   });
 
   describe("事件乱序", () => {
-    it("乱序事件按时间排序处理", () => {
+    it("乱序事件按时间排序处理，B扣球落A方B得分", () => {
       const rally = makeRally("out-of-order", "A", [
         {
           id: "e3",
@@ -479,7 +479,7 @@ describe("engine - 规则引擎", () => {
       const r = processRally(rally);
       const firstExp = r.explanation[0];
       expect(firstExp.eventType).toBe("serve");
-      expect(r.winner).toBe("A");
+      expect(r.winner).toBe("B");
     });
   });
 
@@ -506,6 +506,117 @@ describe("engine - 规则引擎", () => {
       expect(vn.length).toBeGreaterThan(0);
       expect(vn[0].team).toBe("B");
       expect(r.winner).toBe("A");
+    });
+  });
+
+  describe("挑战复核", () => {
+    it("落点判定后挑战成功，推翻原判罚，得分方反转", () => {
+      const rally = makeRally("challenge-landing", "A", [
+        {
+          id: "e1",
+          type: "serve",
+          t: 0,
+          team: "A",
+          player: 1,
+          trajectory: [
+            { t: 0, x: 0.5, y: 3, z: 3 },
+            { t: 0.6, x: 9, y: 5, z: 2.6 },
+            { t: 1.0, x: 15, y: 6, z: 0 },
+          ],
+        },
+        { id: "e2", type: "landing", t: 1.0 },
+        {
+          id: "e3",
+          type: "challenge_review",
+          t: 1.5,
+          challenge_overturned: true,
+          note: "鹰眼显示球压线",
+        },
+      ]);
+      const r = processRally(rally);
+      expect(r.explanation.length).toBeGreaterThanOrEqual(3);
+      const challengeExp = r.explanation[r.explanation.length - 1];
+      expect(challengeExp.eventType).toBe("challenge_review");
+      expect(challengeExp.outcome).toContain("挑战成功");
+      expect(r.winner).toBe("A");
+      expect(r.reason).toContain("挑战推翻原判");
+    });
+
+    it("犯规判定后挑战成功，推翻犯规判罚，得分方反转", () => {
+      const rally = makeRally("challenge-foul", "B", [
+        {
+          id: "e1",
+          type: "serve",
+          t: 0,
+          team: "B",
+          player: 7,
+          trajectory: [
+            { t: 0, x: 17.5, y: 0, z: 3 },
+            { t: 0.6, x: 9, y: 0, z: 2.6 },
+            { t: 1.1, x: 4, y: 0, z: 2 },
+          ],
+        },
+        {
+          id: "e2",
+          type: "receive",
+          t: 1.1,
+          team: "A",
+          player: 6,
+          trajectory: [
+            { t: 1.1, x: 4, y: 0, z: 2 },
+            { t: 1.25, x: 4.2, y: 0, z: 2.5 },
+          ],
+        },
+        { id: "e3", type: "set", t: 1.25, team: "A", player: 6 },
+        {
+          id: "e4",
+          type: "challenge_review",
+          t: 1.3,
+          challenge_overturned: true,
+          note: "录像显示6号并非连续触球",
+        },
+      ]);
+      const r = processRally(rally);
+      const challengeExp = r.explanation.find(
+        (e) => e.eventType === "challenge_review",
+      );
+      expect(challengeExp).toBeDefined();
+      expect(challengeExp!.outcome).toContain("挑战成功");
+      expect(r.state.violations.length).toBe(0);
+      expect(r.winner).toBe("A");
+      expect(r.reason).toContain("挑战推翻原判");
+    });
+
+    it("挑战失败，维持原判", () => {
+      const rally = makeRally("challenge-fail", "A", [
+        {
+          id: "e1",
+          type: "serve",
+          t: 0,
+          team: "A",
+          player: 1,
+          trajectory: [
+            { t: 0, x: 0.5, y: 3, z: 3 },
+            { t: 0.6, x: 9, y: 5, z: 2.6 },
+            { t: 1.0, x: 15, y: 6, z: 0 },
+          ],
+        },
+        { id: "e2", type: "landing", t: 1.0 },
+        {
+          id: "e3",
+          type: "challenge_review",
+          t: 1.5,
+          challenge_overturned: false,
+          note: "维持出界判罚",
+        },
+      ]);
+      const r = processRally(rally);
+      const challengeExp = r.explanation.find(
+        (e) => e.eventType === "challenge_review",
+      );
+      expect(challengeExp).toBeDefined();
+      expect(challengeExp!.outcome).toContain("挑战失败");
+      expect(r.winner).toBe("B");
     });
   });
 
@@ -637,11 +748,16 @@ describe("engine - 规则引擎", () => {
       expect(batch.summary.totalRallies).toBe(5);
       expect(batch.matchScore.teamA + batch.matchScore.teamB).toBe(5);
       expect(batch.rallies.length).toBe(5);
-      expect(batch.rallies[0].winner).toBe("B");
+      expect(batch.rallies[0].winner).toBe("A");
       expect(batch.rallies[1].winner).toBe("B");
+      expect(batch.rallies[2].winner).toBe("A");
+      expect(batch.rallies[3].winner).toBe("B");
+      expect(batch.rallies[4].winner).toBe("B");
+      expect(batch.matchScore.teamA).toBe(2);
+      expect(batch.matchScore.teamB).toBe(3);
       const lastR =
         batch.matchScore.rallyResults[batch.matchScore.rallyResults.length - 1];
-      expect(lastR.scoreAfter.A + lastR.scoreAfter.B).toBe(5);
+      expect(lastR.scoreAfter).toEqual({ A: 2, B: 3 });
     });
 
     it("带初始比分的批量判定", () => {
@@ -663,7 +779,8 @@ describe("engine - 规则引擎", () => {
         ]),
       ];
       const batch = processBatch(rallies, { A: 5, B: 3 });
-      expect(batch.matchScore.teamA + batch.matchScore.teamB).toBe(9);
+      expect(batch.matchScore.teamA).toBe(6);
+      expect(batch.matchScore.teamB).toBe(3);
     });
   });
 

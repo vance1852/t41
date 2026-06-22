@@ -47,6 +47,7 @@ export function createInitialState(servingTeam: Team): RallyState {
     ballSide: servingTeam,
     ended: false,
     endTime: null,
+    challengeOverturned: false,
   };
 }
 
@@ -173,7 +174,7 @@ export function processRally(
     : [];
 
   for (const event of sortedEvents) {
-    if (state.ended) break;
+    if (state.ended && event.type !== "challenge_review") break;
 
     if (event.trajectory) {
       for (const tp of event.trajectory) {
@@ -369,14 +370,14 @@ export function processRally(
           const other = opponent(lastTouchTeamVal);
 
           if (landing.inBounds || landing.onLine) {
-            winner = other;
+            winner = opponent(landingTeam);
             if (landing.onLine && !landing.inBounds) {
               outcome = `球压线落在${landingTeam}方场地边界，坐标(${landing.x.toFixed(2)}, ${landing.y.toFixed(2)})，按规则压线算界内，${winner}队得分`;
             } else {
               outcome = `球落在${landingTeam}方场地界内${landing.onLine ? "（压线）" : ""}，坐标(${landing.x.toFixed(2)}, ${landing.y.toFixed(2)})，${winner}队得分`;
             }
           } else {
-            winner = lastTouchTeamVal;
+            winner = opponent(lastTouchTeamVal);
             outcome = `球落在界外，坐标(${landing.x.toFixed(2)}, ${landing.y.toFixed(2)})，${lastTouchTeamVal}队击球出界，${winner}队得分`;
           }
 
@@ -420,6 +421,7 @@ export function processRally(
         if (overturned && state.violations.length > 0) {
           const lastViolation = state.violations[state.violations.length - 1];
           state.violations.pop();
+          state.challengeOverturned = true;
           const newTeam = opponent(lastViolation.team);
           explanations.push({
             step,
@@ -430,7 +432,8 @@ export function processRally(
             ruleReference: ruleForEventType(event.type),
             outcome: `挑战成功！原判罚"${lastViolation.description}"被推翻，${newTeam}队得分`,
           });
-        } else if (overturned && explanations.length > 1) {
+        } else if (overturned) {
+          state.challengeOverturned = true;
           explanations.push({
             step,
             time: event.t,
@@ -525,10 +528,10 @@ export function processRally(
     const lastTouch = state.touchHistory[state.touchHistory.length - 1];
     const firstLanding = state.landings[0];
     if (firstLanding.inBounds || firstLanding.onLine) {
-      winner = opponent(lastTouch.team);
+      winner = opponent(firstLanding.teamSide);
       reason = `球落在${firstLanding.teamSide}方场地${firstLanding.onLine ? "压线" : "界内"}，${winner}队得分`;
     } else {
-      winner = lastTouch.team;
+      winner = opponent(lastTouch.team);
       reason = `${lastTouch.team}队击球出界，${winner}队得分`;
     }
   } else if (!state.ended && explanations.length > 0) {
@@ -538,6 +541,11 @@ export function processRally(
       winner = match[1] as Team;
       reason = lastExp.outcome;
     }
+  }
+
+  if (state.challengeOverturned) {
+    winner = opponent(winner);
+    reason = `挑战推翻原判，${winner}队得分`;
   }
 
   return {

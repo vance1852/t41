@@ -1,0 +1,35 @@
+{
+  "id": "challenge-review",
+  "name": "挑战复核样例",
+  "servingTeam": "A",
+  "courtLength": 18,
+  "courtWidth": 9,
+  "netHeight": 2.24,
+  "events": [
+    {
+      "id": "e1",
+      "type": "serve",
+      "t": 0,
+      "team": "A",
+      "player": 1,
+      "trajectory": [
+        { "t": 0, "x": 0.5, "y": 3, "z": 3 },
+        { "t": 0.6, "x": 9, "y": 5, "z": 2.6 },
+        { "t": 1.0, "x": 15, "y": 6, "z": 0 }
+      ]
+    },
+    {
+      "id": "e2",
+      "type": "landing",
+      "t": 1.0
+    },
+    {
+      "id": "e3",
+      "type": "challenge_review",
+      "t": 1.5,
+      "challenge_overturned": true,
+      "note": "鹰眼显示球实际压在边线上，应判界内"
+    }
+  ],
+  "trajectory": []
+}

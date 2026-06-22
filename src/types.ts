@@ -94,6 +94,7 @@ export interface RallyState {
   ballSide: Team;
   ended: boolean;
   endTime: number | null;
+  challengeOverturned: boolean;
 }
 
 export interface RallyResult {
